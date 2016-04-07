@@ -1,0 +1,55 @@
+<html><head><title>Traffic</title>
+<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script src="http://jquery-csv.googlecode.com/git/src/jquery.csv.js"></script>
+<script type="text/javascript">
+function getSize(size) {
+    var prefix=new Array("","k","M","G","T","P","E","Z"); var base=1000;
+    var pos=0;
+    while (size>base) {
+        size/=base; pos++;
+    }
+    if (pos > 2) precision=1000; else precision = 1;
+    return (Math.round(size*precision)/precision)+' '+prefix[pos];}
+</script></head>
+<body><h1>Total Usage :</h1>
+<table border="1">
+<tr bgcolor=silver>
+<th>User</th>
+<th>Peak download</th>
+<th>Peak upload</th>
+<th>Offpeak download</th>
+<th>Offpeak upload</th>
+<th>First seen</th>
+<th>Last seen</th>
+</tr>
+<script type="text/javascript">
+var values = new Array(
+
+new Array(
+"JosiahZ5",352992942,57659773,0,0,"18-02-2016_17:19:22","19-02-2016_08:02:00"),
+new Array(
+"74:d4:35:15:4c:fc",2014837,2437029,0,0,"18-02-2016_19:13:00","19-02-2016_16:59:00"),
+new Array(
+"e8:94:f6:69:1d:36",51191,140678,0,0,"18-02-2016_17:19:22","19-02-2016_16:47:00"),
+0);
+for (i=0; i < values.length-1; i++) {
+    document.write("<tr><td>");
+    document.write(values[i][0]);
+    document.write("</td>");
+    for (j=1; j < 5; j++) {
+        document.write("<td>");
+        document.write(getSize(values[i][j]));
+        document.write("</td>");
+    }
+    document.write("<td>");
+    document.write(values[i][5]);
+    document.write("</td>");
+    document.write("<td>");
+    document.write(values[i][6]);
+    document.write("</td>");
+    document.write("</tr>");
+}
+</script></table>
+<br /><small>This page was generated on Fri Feb 19 17:00:00 NZDT 2016</small>
+</body></html>
+

@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+# start it after most other essentials are loaded
+# We sleep a little at the start, so it's more likely we've got WAN
+# This is especially true of lazy PPPoE sessions
+# We do everything in /tmp coz we'll need the RAM for the sysupgrade
+START=98
+start() {
+        echo Starting upgrade check
+        /bin/date >> /tmp/upgradedate
+        sleep 10
+        /bin/date >> /tmp/upgradedate
+}
+
