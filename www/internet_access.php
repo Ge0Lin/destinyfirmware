@@ -12,7 +12,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $internetpw = test_input($_POST["internetpw"]);
         $internetvlan = test_input($_POST["internetvlan"]);
 
+	if (strlen($internetusername) > 1) {
+		// Username is set so we're gonna do PPPoE for the WAN
+		$command = test_input(shell_exec("sudo /sbin/uci set network.wan.proto=pppoe"));
+		$command = test_input(shell_exec("sudo /sbin/uci set network.wan.username='$internetusername'"));
+		$command = test_input(shell_exec("sudo /sbin/uci set network.wan.password='$internetpw'"));
+		$command = test_input(shell_exec("sudo /sbin/uci commit network"));
+		$command = test_input(shell_exec("sudo /etc/init.d/network restart"));
+		$alertmessage = "Set internet username and password.";
+		}
+
+	if (strlen($internetusername) <= 1) {
+		// Username is not set so we'll use DHCP for the WAN
+		$command = test_input(shell_exec("sudo /sbin/uci set network.wan.proto=dhcp"));
+		$command = test_input(shell_exec("sudo /sbin/uci commit network"));
+		$command = test_input(shell_exec("sudo /etc/init.d/network restart"));
+		$alertmessage = "Set internet to automatic settings.";
+		}
+
+	// This is the _old_ way which currently doesn't actually do anything.
+	// Setting up PPPoE to work for now, can revisit VLANs later
 	// We change it from "on" to mean "10" coz eventually we'll support VLAN numbers
+	// It can probably be scrapped / deleted by leaving it in here for now coz it's not _actually_ doing anything permanent
 	if ($internetvlan == "on") {
 		$internetvlan = "10";
 	}
@@ -74,10 +95,10 @@ config switch_vlan
         option ports '4 6t'" . PHP_EOL;
 
         // End of networking config file
-        file_put_contents($networkconfigfile, $networkconfigfilecontents);
+        //file_put_contents($networkconfigfile, $networkconfigfilecontents);
 
         // After we've saved it in /tmp we'll then move it to /etc/config/network
-        shell_exec("sudo /bin/mv $networkconfigfile /etc/config/network");
+        //shell_exec("sudo /bin/mv $networkconfigfile /etc/config/network");
 
         // Now we restart networking
 
@@ -118,7 +139,7 @@ if (strlen($wanip > 7)) {
 // Check and see if we've saved the settings. If we have, tell the user
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 echo "  <div class='mdl-card__title mdl-card--expand mdl-color--red-300 mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid'>
-    <h2 class='mdl-card__title-text'>Settings have been saved</h2>
+    <h2 class='mdl-card__title-text'>Settings have been saved! " . $alertmessage . "</h2>
   </div>";
 }
 ?>
